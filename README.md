@@ -9,7 +9,8 @@ Production-quality MVP that turns a short project brief into a structured techni
 - **Zod validation** on the server with **one repair retry** for bad JSON and one regeneration retry for schema violations
 - Persists projects and analyses in **SQLite** via **Prisma**
 - Responsive **React + Vite + Tailwind** dashboard with history, detail view, and exports
-- Download roadmap as **JSON** or **Markdown** technical report
+- Download roadmap as **JSON**, **Markdown**, **AGENTS.md** or **Technical TXT** report
+- **Prompt Studio:** Generates optimized Master Prompts for Coding Agents (Cursor, Aider, Windsurf, etc.)
 
 ## Tech Stack
 
@@ -81,10 +82,10 @@ flowchart LR
 ## Ollama Setup
 
 1. Install Ollama from [https://ollama.com](https://ollama.com).
-2. Pull the default model (configurable via `OLLAMA_MODEL`):
+2. Pull the recommended model:
 
 ```bash
-ollama pull qwen3
+ollama pull qwen2.5-coder:1.5b
 ```
 
 3. Ensure the daemon is running (macOS menu bar app or `ollama serve`).
@@ -150,6 +151,7 @@ After analysis you should see structured sections such as:
 11. Week-by-week roadmap aligned to duration  
 12. Risks & mitigations  
 13. Future improvements  
+14. **Coding Agent Prompt:** Optimized instructions for Cursor, Aider, etc.
 
 ## Troubleshooting
 
@@ -170,7 +172,7 @@ curl http://localhost:11434/api/tags
 **Fix:**
 
 ```bash
-ollama pull qwen3
+ollama pull qwen2.5-coder:1.5b
 # or change OLLAMA_MODEL in server/.env to a model you already pulled
 ```
 
@@ -225,6 +227,9 @@ The API enables permissive CORS for local development. If you host the UI on ano
 | DELETE | `/api/projects/:id` | Delete project + analysis |
 | GET | `/api/projects/:id/export/json` | Download JSON export |
 | GET | `/api/projects/:id/export/markdown` | Download Markdown report |
+| GET | `/api/projects/:id/export/txt` | Download Master Prompt TXT |
+| GET | `/api/projects/:id/export/agents-md` | Download AGENTS.md |
+| GET | `/api/projects/:id/export/prompt/:agent` | Download specific Agent prompt |
 
 ---
 

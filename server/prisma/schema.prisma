@@ -1,0 +1,136 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id                     String    @id @default(cuid())
+  title                  String
+  description            String
+  
+  // Legacy v1 fields
+  targetPlatform         String
+  difficultyLevel        String
+  priority               String
+  preferredTechnologies  String?
+  roadmapDurationWeeks   Int       @default(8)
+  
+  // v2 fields
+  schemaVersion          String    @default("1.0")
+  aiProvider             String?   // cloud | local | auto
+  selectedModel          String?
+  providerFallbackInfo   String?
+  
+  // Input options
+  outputMode             String?   @default("full_project_plan")
+  planMode               String?   @default("plan_first")
+  outputDepth            String?   @default("detailed")
+  codingAgent            String?   @default("auto")
+  projectMaturity        String?   @default("just_idea")
+  
+  // Stack selections
+  programmingLanguage    String?   @default("auto")
+  runtime                String?   @default("auto")
+  packageManager         String?   @default("auto")
+  frontendFramework      String?   @default("auto")
+  backendFramework       String?   @default("auto")
+  database               String?   @default("auto")
+  orm                    String?   @default("auto")
+  uiStyling              String?   @default("auto")
+  testing                String?   @default("auto")
+  deployment             String?   @default("auto")
+  
+  // Requirement toggles (stored as JSON string)
+  requirementToggles     String?
+  
+  // Custom instructions
+  customInstructions     String?
+  
+  status                 String    @default("analyzing")
+  errorMessage           String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  analysis               Analysis?
+}
+
+model Analysis {
+  id                       String   @id @default(cuid())
+  projectId                String   @unique
+  project                  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  // AI Provider info
+  modelName                String
+  provider                 String?  // cloud | local
+  providerFallbackInfo     String?
+  
+  // Core analysis
+  projectSummary           String
+  problemDefinition        String
+  complexityScore          Int
+  estimatedDurationWeeks   Int
+  requiredSkillLevel       String
+  
+  // Legacy v1 fields (kept nullable for backward compatibility)
+  targetUsersJson          String?
+  mvpScopeJson             String?
+  coreFeaturesJson         String?
+  alternativeStacksJson    String?
+  modulesJson              String?
+  
+  // v2 extended fields
+  assumptions              String?
+  missingInformationQuestions String?
+  projectMaturityAnalysis  String?
+  
+  // Recommendations
+  platformRecommendation   String?
+  codingAgentRecommendation String?
+  languageRecommendation   String?
+  runtimeRecommendation    String?
+  packageManagerRecommendation String?
+  frontendFrameworkRecommendation String?
+  backendFrameworkRecommendation String?
+  databaseRecommendation   String?
+  ormRecommendation        String?
+  uiStylingRecommendation  String?
+  testingRecommendation    String?
+  deploymentRecommendation String?
+  
+  // Stack
+  recommendedStackJson     String
+  rejectedAlternativesJson String?
+  
+  // Architecture
+  architectureOverview     String?
+  systemModulesJson        String?
+  
+  // UI & API
+  uiPagePlanJson           String?
+  databaseSchemaJson       String?
+  apiEndpointsJson         String?
+  
+  // Roadmap
+  developmentRoadmapJson   String?
+  taskBreakdownJson        String?
+  
+  // Quality & Prompt
+  promptQualityScoreJson   String?
+  generatedPromptDraftJson String?
+  finalPromptJson          String?
+  promptSectionsJson       String?
+  
+  // Testing & Risks
+  acceptanceCriteriaJson   String?
+  testPlanJson             String?
+  risksJson                String?
+  futureImprovementsJson   String?
+  
+  // Raw response
+  rawAiResponseJson        String
+  createdAt                DateTime @default(now())
+}
